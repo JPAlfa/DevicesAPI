@@ -24,7 +24,7 @@ namespace Devices.Domain.Entities
             CreationTime = DateTime.UtcNow;
         }
 
-        public void Update(string? name, string? brand, string? description, DeviceState? state)
+        public void Update(string? name, string? brand, DeviceState? state)
         {
             if (!State.CanUpdateNameAndBrand())
             {
