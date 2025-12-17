@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Devices.Application/Devices.Application.csproj" />
+  <Project Path="Devices.Domain/Devices.Domain.csproj" />
+  <Project Path="Devices.Infrastructure/Devices.Infrastructure.csproj" />
+  <Project Path="Devices.Test/Devices.Test.csproj" />
+  <Project Path="DevicesAPI/Devices.API.csproj" />
+</Solution>
