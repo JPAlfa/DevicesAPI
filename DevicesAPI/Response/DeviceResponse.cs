@@ -8,8 +8,6 @@
 
         public string Brand { get; init; } = default!;
 
-        public string? Description { get; init; }
-
         public string State { get; init; } = default!;
 
         public DateTime CreationTime { get; init; }

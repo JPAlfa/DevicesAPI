@@ -7,6 +7,6 @@ namespace Devices.API.Request
     {
         public required string Name { get; set; }
         public required string Brand { get; set; }
-        public required DeviceStateDto State { get; set; }
+        public required string State { get; set; }
     }
 }

@@ -27,7 +27,6 @@ namespace Devices.Application.UseCases.DeviceUseCase.PatchDevice
             if (cmd.State is not null)
                 newState = DeviceState.From(cmd.State);
 
-            // Regra final no domínio
             device.Update(
                 name: cmd.Name,
                 brand: cmd.Brand,

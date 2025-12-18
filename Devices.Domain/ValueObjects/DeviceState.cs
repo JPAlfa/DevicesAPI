@@ -35,13 +35,14 @@ namespace Devices.Domain.ValueObjects
 
         public static DeviceState From(string value)
         {
-            var v = value.Trim().ToLowerInvariant();
+            var v = DeviceStateNormalization.Normalize(value);
+
             return v switch
             {
                 "available" => Available,
                 "in-use" => InUse,
                 "inactive" => Inactive,
-                _ => throw new DomainException("Invalid device state.")
+                _ => throw new DomainException($"Invalid device state: '{value}'.")
             };
         }
 

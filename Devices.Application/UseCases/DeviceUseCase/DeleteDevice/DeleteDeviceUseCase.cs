@@ -19,7 +19,6 @@ namespace Devices.Application.UseCases.DeviceUseCase.DeleteDevice
             var device = await _repo.GetByIdAsync(cmd.Id, ct)
                 ?? throw new NotFoundException($"Device '{cmd.Id}' was not found.");
 
-            // Regra: in-use não pode deletar (domínio deve bloquear)
             device.EnsureCanDelete();
 
             await _repo.Remove(device);

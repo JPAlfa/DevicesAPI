@@ -1,6 +1,7 @@
 ﻿using Devices.API.Contracts;
 using Devices.API.Request;
 using Devices.API.Response;
+using Devices.Application.Common;
 using Devices.Application.UseCases.DeviceUseCase;
 using Devices.Application.UseCases.DeviceUseCase.CreateDevice;
 using Devices.Application.UseCases.DeviceUseCase.DeleteDevice;
@@ -29,53 +30,42 @@ namespace Devices.API.Controllers
         [HttpPost]
         public async Task<ActionResult<DeviceResponse>> Create([FromBody] CreateDeviceRequest request, CancellationToken ct)
         {
-            var result = await _service.CreateAsync(new CreateDeviceCommand(request.Name, request.Brand, request.State switch
-            {
-                DeviceStateDto.Available => "Available",
-                DeviceStateDto.InUse => "InUse",
-                DeviceStateDto.Inactive => "Inactive",
-                _ => throw new DomainException("Invalid device state.")
-            }), ct);
+            var dto = await _service.CreateAsync(new CreateDeviceCommand(request.Name, request.Brand, request.State), ct);
+
+            var result = Map(dto);
             return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<DeviceResponse>> GetById(Guid id, CancellationToken ct)
         {
-            var device = await _service.GetByIdAsync(new GetDeviceByIdQuery(id), ct);
+            var dto = await _service.GetByIdAsync(new GetDeviceByIdQuery(id), ct);
+
+            if (dto is null)
+                return NotFound();
+
+            var device = Map(dto);
             return Ok(device);
         }
 
         [HttpGet]
         public async Task<ActionResult<List<DeviceResponse>>> GetAll([FromQuery] string? brand, [FromQuery] string? state, CancellationToken ct)
         {
-            var list = await _service.ListAsync(new ListDevicesQuery(brand, state), ct);
-            return Ok(list);
+            var dtos = await _service.ListAsync(new ListDevicesQuery(brand, state), ct);
+            return Ok(dtos.Select(Map).ToList());
         }
 
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<DeviceResponse>> Update(Guid id, [FromBody] UpdateDeviceRequest request, CancellationToken ct)
         {
-            var updated = await _service.UpdateAsync(new UpdateDeviceCommand(id, request.Name, request.Brand, request.State switch
-            {
-                DeviceStateDto.Available => "Available",
-                DeviceStateDto.InUse => "InUse",
-                DeviceStateDto.Inactive => "Inactive",
-                _ => throw new DomainException("Invalid device state.")
-            }), ct);
+            var updated = await _service.UpdateAsync(new UpdateDeviceCommand(id, request.Name, request.Brand, request.State), ct);
             return Ok(updated);
         }
 
         [HttpPatch("{id:guid}")]
         public async Task<ActionResult<DeviceResponse>> Patch(Guid id, [FromBody] PatchDeviceRequest request, CancellationToken ct)
         {
-            var updated = await _service.PatchAsync(new PatchDeviceCommand(id, request.Name, request.Brand, request.State switch
-            {
-                DeviceStateDto.Available => "Available",
-                DeviceStateDto.InUse => "InUse",
-                DeviceStateDto.Inactive => "Inactive",
-                _ => throw new DomainException("Invalid device state.")
-            }), ct);
+            var updated = await _service.PatchAsync(new PatchDeviceCommand(id, request.Name, request.Brand, request.State), ct);
             return Ok(updated);
         }
 
@@ -85,5 +75,14 @@ namespace Devices.API.Controllers
             await _service.DeleteAsync(new DeleteDeviceCommand(id), ct);
             return NoContent();
         }
+
+        private static DeviceResponse Map(DeviceDto dto) => new()
+        {
+            Id = dto.Id,
+            Name = dto.Name,
+            Brand = dto.Brand,
+            State = dto.State,
+            CreationTime = dto.CreationTime
+        };
     }
 }
