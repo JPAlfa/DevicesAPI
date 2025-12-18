@@ -6,6 +6,6 @@ namespace Devices.API.Request
     {
         public string? Name { get; set; }
         public string? Brand { get; set; }
-        public DeviceStateDto? State { get; set; }
+        public string? State { get; set; }
     }
 }

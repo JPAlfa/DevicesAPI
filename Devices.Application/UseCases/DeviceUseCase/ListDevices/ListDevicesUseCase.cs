@@ -1,5 +1,6 @@
 ﻿using Devices.Application.Abstractions;
 using Devices.Application.Common;
+using Devices.Domain;
 using Devices.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace Devices.Application.UseCases.DeviceUseCase.ListDevices
 
         public async Task<IReadOnlyList<DeviceDto>> HandleAsync(ListDevicesQuery query, CancellationToken ct)
         {
-            var devices = await _repo.ListAsync(query.Brand, query.State, ct);
+            var devices = await _repo.ListAsync(query.Brand, DeviceStateNormalization.Normalize(query.State), ct);
 
             return devices
                 .Select(ToDto)
